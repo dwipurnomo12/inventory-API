@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('product_code')->unique();
             $table->string('product_name');
-            $table->string('description');
-            $table->string('image');
+            $table->text('description');
+            $table->string('image')->nullable();
             $table->integer('minimum_stock');
-            $table->integer('stock')->nullable()->default(0);
+            $table->integer('stock')->default(0);
             $table->foreignId('category_id')->constrained('categories');
             $table->foreignId('unit_id')->constrained('units');
             $table->timestamps();
