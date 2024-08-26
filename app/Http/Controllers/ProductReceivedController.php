@@ -23,13 +23,13 @@ class ProductReceivedController extends Controller
         return response()->json([
             'status'    => 'success',
             'data'      => $productsReceived
-        ], 201);
+        ], 200);
     }
 
     public function addProduct(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'transaction_code'  => 'required|unique:products_received',
+            'transaction_code'  => 'unique:products_received',
             'date'              => 'required|date',
             'product_name'      => 'required',
             'stock_in'          => 'required|numeric',
@@ -42,8 +42,10 @@ class ProductReceivedController extends Controller
             ], 422);
         }
 
+        $transaction_code = 'TRX-IN-' . str_pad(rand(1, 99999), 5, '0', STR_PAD_LEFT);
+
         $productReceived = ProductReceived::create([
-            'transaction_code'  => $request->transaction_code,
+            'transaction_code'  => $transaction_code,
             'date'              => $request->date,
             'product_name'      => $request->product_name,
             'stock_in'          => $request->stock_in,
@@ -66,6 +68,7 @@ class ProductReceivedController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Product received added successfully!',
+            'data'      => $productReceived
         ], 201);
     }
 
@@ -80,7 +83,7 @@ class ProductReceivedController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'transaction_code'  => 'required|unique:products_received,transaction_code,' . $id,
+            'transaction_code'  => 'unique:products_received,transaction_code,' . $id,
             'date'              => 'required|date',
             'product_name'      => 'required',
             'stock_in'          => 'required|numeric',
@@ -97,7 +100,6 @@ class ProductReceivedController extends Controller
         $oldStockIn     = $productReceived->stock_in;
 
         $productReceived->update([
-            'transaction_code'  => $request->transaction_code,
             'date'              => $request->date,
             'product_name'      => $request->product_name,
             'stock_in'          => $request->stock_in,
@@ -124,6 +126,7 @@ class ProductReceivedController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Product received updated successfully!',
-        ], 200);
+            'data'      => $productReceived
+        ], 201);
     }
 }

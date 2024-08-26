@@ -20,7 +20,7 @@ class CategoryController extends Controller
         return response()->json([
             'status'    => 'success',
             'data'      => $categories
-        ], 201);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -35,13 +35,14 @@ class CategoryController extends Controller
             ], 422);
         }
 
-        Category::create([
+        $category = Category::create([
             'category'  => $request->category
         ]);
 
         return response()->json([
             'status'    => 'success',
             'message'   => 'Category added successfully!',
+            'data'      => $category
         ], 201);
     }
 
@@ -72,7 +73,8 @@ class CategoryController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Category updated successfully!',
-        ], 200);
+            'data'      => $category
+        ], 201);
     }
 
     public function destroy($id)
@@ -89,6 +91,7 @@ class CategoryController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Category deleted successfully!',
+            'data'      => $category
         ], 200);
     }
 }

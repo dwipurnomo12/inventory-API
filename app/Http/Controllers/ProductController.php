@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -23,13 +25,13 @@ class ProductController extends Controller
         return response()->json([
             'status'    => 'success',
             'data'      => $products
-        ], 201);
+        ], 200);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'product_code'  => 'required|unique:products',
+            'product_code'  => 'unique:products',
             'product_name'  => 'required',
             'description'   => 'required',
             'image'         => 'nullable|mimes:jpg,jpeg,png',
@@ -47,12 +49,14 @@ class ProductController extends Controller
         $imagePath = null;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension(); // Gunakan UUID sebagai nama file
-            $imagePath = $image->storeAs('uploads/products', $imageName, 'public'); // Simpan di storage/public/uploads/products
+            $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
+            $imagePath = $image->storeAs('products', $imageName, 'public');
         }
 
+        $product_code = 'PRD-' . str_pad(rand(1, 99999), 5, '0', STR_PAD_LEFT);
+
         $product = Product::create([
-            'product_code'  => $request->product_code,
+            'product_code'  => $product_code,
             'product_name'  => $request->product_name,
             'description'   => $request->description,
             'image'         => $imagePath,
@@ -96,10 +100,9 @@ class ProductController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'product_code'  => 'required|unique:products,product_code,' . $id,
             'product_name'  => 'required',
             'description'   => 'required',
-            'image'         => 'nullable|mimes:jpg,jpeg,png',
+            'image'         => 'mimes:jpg,jpeg,png',
             'minimum_stock' => 'required|integer',
             'category_id'   => 'required|integer',
             'unit_id'       => 'required|integer'
@@ -113,13 +116,23 @@ class ProductController extends Controller
 
         $imagePath = $product->image;
         if ($request->hasFile('image')) {
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+
             $image = $request->file('image');
             $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('uploads/products', $imageName, 'public');
+            $imagePath = $image->storeAs('products', $imageName, 'public');
+
+            if (!$imagePath) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Failed to upload image!'
+                ], 500);
+            }
         }
 
         $product->update([
-            'product_code'  => $request->product_code,
             'product_name'  => $request->product_name,
             'description'   => $request->description,
             'image'         => $imagePath,
@@ -131,7 +144,8 @@ class ProductController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Product updated successfully!',
-        ], 200);
+            'data'      => $product
+        ], 201);
     }
 
     public function destroy($id)
@@ -148,6 +162,7 @@ class ProductController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Product deleted successfully!',
+            'data'      => $product
         ], 200);
     }
 }

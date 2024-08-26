@@ -21,7 +21,7 @@ class SupplierController extends Controller
         return response()->json([
             'status'    => 'success',
             'data'      => $suppliers
-        ], 201);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -37,7 +37,7 @@ class SupplierController extends Controller
             ], 422);
         }
 
-        Supplier::create([
+        $supplier = Supplier::create([
             'supplier'  => $request->supplier,
             'address'   => $request->address
         ]);
@@ -45,6 +45,7 @@ class SupplierController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'supplier added successfully!',
+            'data'      => $supplier
         ], 201);
     }
 
@@ -77,6 +78,7 @@ class SupplierController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Supplier updated successfully!',
+            'data'      => $supplier
         ], 200);
     }
 
@@ -94,6 +96,7 @@ class SupplierController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Supplier deleted successfully!',
-        ], 200);
+            'data'      => $supplier
+        ], 201);
     }
 }

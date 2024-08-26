@@ -21,7 +21,7 @@ class UnitController extends Controller
         return response()->json([
             'status'    => 'success',
             'data'      => $units
-        ], 201);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -36,13 +36,14 @@ class UnitController extends Controller
             ], 422);
         }
 
-        Unit::create([
+        $unit = Unit::create([
             'unit'  => $request->unit
         ]);
 
         return response()->json([
             'status'    => 'success',
             'message'   => 'Unit added successfully!',
+            'data'      => $unit
         ], 201);
     }
 
@@ -73,7 +74,8 @@ class UnitController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Unit updated successfully!',
-        ], 200);
+            'data'      => $unit
+        ], 201);
     }
 
     public function destroy($id)
@@ -90,6 +92,7 @@ class UnitController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Unit deleted successfully!',
+            'data'      => $unit
         ], 200);
     }
 }

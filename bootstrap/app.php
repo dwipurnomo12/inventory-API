@@ -61,6 +61,9 @@ $app->singleton(
 
 $app->configure('app');
 $app->configure('jwt');
+$app->configure('dompdf');
+$app->configure('view');
+
 
 
 /*
@@ -79,8 +82,9 @@ $app->configure('jwt');
 // ]);
 
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class,
-    'jwt.auth' => Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+    'auth'      => App\Http\Middleware\Authenticate::class,
+    'jwt.auth'  => Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+    'CheckRole' => App\Http\Middleware\CheckRole::class,
 ]);
 
 /*
@@ -98,6 +102,7 @@ $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+$app->register(\Barryvdh\DomPDF\ServiceProvider::class);
 
 
 

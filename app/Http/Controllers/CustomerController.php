@@ -21,7 +21,7 @@ class CustomerController extends Controller
         return response()->json([
             'status'    => 'success',
             'data'      => $customers
-        ], 201);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -37,7 +37,7 @@ class CustomerController extends Controller
             ], 422);
         }
 
-        Customer::create([
+        $customer = Customer::create([
             'customer'  => $request->customer,
             'address'   => $request->address
         ]);
@@ -45,6 +45,7 @@ class CustomerController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Customer added successfully!',
+            'data'      => $customer
         ], 201);
     }
 
@@ -77,7 +78,8 @@ class CustomerController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Customer updated successfully!',
-        ], 200);
+            'data'      => $customer
+        ], 201);
     }
 
     public function destroy($id)
@@ -94,6 +96,7 @@ class CustomerController extends Controller
         return response()->json([
             'status'    => 'success',
             'message'   => 'Customer deleted successfully!',
+            'data'      => $customer
         ], 200);
     }
 }
