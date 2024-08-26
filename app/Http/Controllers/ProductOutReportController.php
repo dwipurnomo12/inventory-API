@@ -23,7 +23,7 @@ class ProductOutReportController extends Controller
             ], 400);
         }
 
-        $productReceived = ProductOut::with('supplier');
+        $productReceived = ProductOut::with('customer');
 
         if ($startDate && $endDate) {
             $productReceived->whereBetween('date', [$startDate, $endDate]);
